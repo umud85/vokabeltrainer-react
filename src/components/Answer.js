@@ -1,8 +1,11 @@
 import React from "react";
 
-export default function Answer({currentV}) {
+export default function Answer({currentV, message, handleClick}) {
   return <div className="answer-box">
     <input className="answer-field" type="text" />
-    <button id="my-button">{ currentV ? "OK" : "Start" }</button>
+    {message === "Start" ?
+      <button onClick={handleClick} id="my-button">{message}</button> :
+      <button id="my-button">{message}</button>
+     }
   </div>
 }

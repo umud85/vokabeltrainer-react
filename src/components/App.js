@@ -8,23 +8,28 @@ import Vokabeln from "../vokabeln.csv"
 
 export default function App() {
 
-  useEffect(() => {
-    const getData = async () => {
-      const response = await fetch(Vokabeln);
-      const rawData = await response.text();
-      const formattedData = rawData.split("\n").splice(1);
-      const learningVocs = choseLearningVocs(formattedData);
-     /*  const english = sourceVocs(learningVocs);
-      const german = targetVocs(learningVocs);
-      console.log(english)
-      console.log(german) */
-      setData(learningVocs)
-    }
-    getData();
-  }, []);
-
   const [data, setData] = useState([]);
   const [currentVoc, setCurrentVoc] = useState("");
+  const [gameStarted, setGameStarted] = useState(false);
+  const [english, setEnglish] = useState([]);
+  const [german, setGerman] = useState([]);
+
+  useEffect(() => {
+    let loadingData = true;
+    if (loadingData) {
+      const getData = async () => {
+        const response = await fetch(Vokabeln);
+        const rawData = await response.text();
+        const formattedData = rawData.split("\n").splice(1);
+        const learningVocs = choseLearningVocs(formattedData);
+        setData(learningVocs)
+      }
+      getData();
+    }
+    return () => {
+      loadingData = false;
+    }
+  }, []);
 
   const choseLearningVocs = (vocList) => {
     const learningVocs = [];
@@ -51,6 +56,13 @@ export default function App() {
     return targetV;
   };
 
+  const startGame = () => {
+    setGameStarted(true);
+    setEnglish(sourceVocs(data));
+    console.log(english);
+
+  }
+
   return <Fragment>
     <div className="container">
       <div className="box-title">
@@ -59,7 +71,11 @@ export default function App() {
       <Score />
       <Source />
       <Target />
-      <Answer currentV={currentVoc} />
+      {
+        gameStarted ? <Answer currentV={currentVoc} message={"OK"} /> :
+        <Answer handleClick={startGame} currentV={currentVoc} message={"Start"} /> 
+      }
+      {console.log(english)}
     </div>
   </Fragment>
 }
