@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect, useRef } from "react";
 import Score from "./Score";
 import Source from "./Source";
 import Target from "./Target";
@@ -8,11 +8,11 @@ import Vokabeln from "../vokabeln.csv"
 
 export default function App() {
 
-  const [data, setData] = useState([]);
+  const [basis, setBasis] = useState([]);
   const [currentVoc, setCurrentVoc] = useState("");
   const [gameStarted, setGameStarted] = useState(false);
-  const [english, setEnglish] = useState([]);
-  const [german, setGerman] = useState([]);
+  const [learned, setLearned] = useState([]);
+  const focusRef = React.createRef();
 
   useEffect(() => {
     const getData = async () => {
@@ -20,50 +20,53 @@ export default function App() {
       const rawData = await response.text();
       const formattedData = rawData.split("\n").splice(1);
       const learningVocs = choseLearningVocs(formattedData);
-      setData(learningVocs)
+      setBasis(learningVocs)
     }
     getData();
   }, []);
 
+  const choseRandom = (arr) =>  Math.floor(Math.random() * arr.length);
+
   const choseLearningVocs = (vocList) => {
-    const learningVocs = new Map();
-    while (learningVocs.size < 5) {
-      let randomNumber = Math.floor(Math.random() * vocList.length);
-      if (!learningVocs.has(vocList[randomNumber].split(",")[0])) {
+    const learningVocs = [];
+    while (learningVocs.length < 5) {
+      let randomNumber = choseRandom(vocList)
+      if (!learningVocs.includes(vocList[randomNumber].split(",")[0])) {
         let trimmedPair = vocList[randomNumber].trim();
-        learningVocs.set(trimmedPair.split(",")[0], trimmedPair.split(",")[1]);
+        learningVocs.push(trimmedPair.split(","));
       }
     }
     return learningVocs;
   } 
 
-  const nextVoc = () => {}
+  const choseNextVoc = (vocs) => {
+    let randomNumber = choseRandom(vocs);
+    setCurrentVoc(basis[randomNumber]);
+  }
 
-  const sourceVocs = (chosenVocs) => {
-    console.log(chosenVocs.keys())
-  };
-
-  const targetVocs = (chosenVocs) => {
-   console.log(chosenVocs)
-  };
-
-  const startGame = () => {
+  const startGame = (e) => {
+    e.preventDefault();
+    choseNextVoc(basis);
+    focusRef.current.focus();
     setGameStarted(true);
-    setEnglish(sourceVocs(data));
+  }
+
+  const submitAnswer = (e) => {
+    e.preventDefault();
+    focusRef.current.focus();
   }
 
   return <Fragment>
-    {console.log(data)}
     <div className="container">
       <div className="box-title">
       <h2>Vokabeln Englisch / Deutsch</h2>
       </div>
       <Score />
-      <Source />
+      <Source voc={currentVoc[0]} />
       <Target />
       {
-        gameStarted ? <Answer currentV={currentVoc} message={"OK"} /> :
-        <Answer handleClick={startGame} currentV={currentVoc} message={"Start"} /> 
+        gameStarted ? <Answer ref={focusRef} handleClick={submitAnswer} currentV={currentVoc} message={"OK"} /> :
+        <Answer ref={focusRef} handleClick={startGame} currentV={currentVoc} message={"Start"} /> 
       }
     </div>
   </Fragment>

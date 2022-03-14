@@ -1,11 +1,16 @@
 import React from "react";
 
-export default function Answer({currentV, message, handleClick}) {
-  return <div className="answer-box">
-    <input className="answer-field" type="text" />
-    {message === "Start" ?
-      <button onClick={handleClick} id="my-button">{message}</button> :
-      <button id="my-button">{message}</button>
-     }
-  </div>
-}
+const answer = React.forwardRef(({ currentV, message, handleClick }, ref) => {
+
+  return <form>
+    <div className="answer-box">
+      <input ref={ref} id="answer" className="answer-field" type="text" name="answer" />
+      {message === "Start" ?
+        <div><input type="submit" id="my-button" onClick={handleClick} value={message} /></div> :
+        <div><input type="submit" id="my-button" onClick={handleClick} value={message} /></div>
+      }
+    </div>
+  </form>
+})
+
+export default answer;
