@@ -1,16 +1,32 @@
-import React from "react";
+import React, {useEffect, useRef} from "react";
 
-const answer = React.forwardRef(({ currentV, message, handleClick }, ref) => {
+const Answer = ({ currentV, message, handleClick, handleChange, value }) => {
 
-  return <form>
+  const inputElement = useRef(null)
+
+  useEffect(() => {
+    if (inputElement.current && message === "OK") {
+      inputElement.current.focus()
+    }
+  })
+
+  return <form onSubmit={handleClick}>
     <div className="answer-box">
-      <input ref={ref} id="answer" className="answer-field" type="text" name="answer" />
+      <input
+        id="answer"
+        className="answer-field"
+        type="text"
+        name="answer"
+        value={value}
+        onChange={handleChange}
+        ref={inputElement}
+      />
       {message === "Start" ?
-        <div><input type="submit" id="my-button" onClick={handleClick} value={message} /></div> :
-        <div><input type="submit" id="my-button" onClick={handleClick} value={message} /></div>
+        <div><input type="submit" id="my-button" value={message} /></div> :
+        <div><input type="submit" id="my-button" value={message} /></div>
       }
     </div>
   </form>
-})
+}
 
-export default answer;
+export default Answer

@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect, useRef } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import Score from "./Score";
 import Source from "./Source";
 import Target from "./Target";
@@ -11,8 +11,10 @@ export default function App() {
   const [basis, setBasis] = useState([]);
   const [currentVoc, setCurrentVoc] = useState("");
   const [gameStarted, setGameStarted] = useState(false);
+  const [showSolution, setShowSolution] = useState(false);
   const [learned, setLearned] = useState([]);
-  const focusRef = React.createRef();
+  const [inputValue, setInputValue] = useState("");
+  const [isCorrect, setIsCorrect] = useState(false);
 
   useEffect(() => {
     const getData = async () => {
@@ -47,26 +49,35 @@ export default function App() {
   const startGame = (e) => {
     e.preventDefault();
     choseNextVoc(basis);
-    focusRef.current.focus();
     setGameStarted(true);
   }
 
   const submitAnswer = (e) => {
     e.preventDefault();
-    focusRef.current.focus();
+    if (!showSolution) {
+      if (currentVoc[1].includes(inputValue)) {
+        setIsCorrect(!isCorrect);
+      }
+    }
+  }
+
+  const handleChange = (e) => {
+    setInputValue(e.target.value)
   }
 
   return <Fragment>
+        {console.log(currentVoc)}
+        
     <div className="container">
       <div className="box-title">
       <h2>Vokabeln Englisch / Deutsch</h2>
       </div>
       <Score />
       <Source voc={currentVoc[0]} />
-      <Target />
+      <Target gameStatus={gameStarted} feedback={isCorrect} />
       {
-        gameStarted ? <Answer ref={focusRef} handleClick={submitAnswer} currentV={currentVoc} message={"OK"} /> :
-        <Answer ref={focusRef} handleClick={startGame} currentV={currentVoc} message={"Start"} /> 
+        gameStarted ? <Answer value={inputValue} handleChange={handleChange} handleClick={submitAnswer} currentV={currentVoc} message={"OK"} /> :
+        <Answer value={inputValue} handleChange={handleChange} handleClick={startGame} currentV={currentVoc} message={"Start"} /> 
       }
     </div>
   </Fragment>
