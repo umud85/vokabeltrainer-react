@@ -9,12 +9,18 @@ import Vokabeln from "../vokabeln.csv"
 export default function App() {
 
   const [basis, setBasis] = useState([]);
+  const [learned, setLearned] = useState([]);
+  const [score, setScore] = useState({
+    basisScore: 5,
+    learnedScore: 0,
+  });
   const [currentVoc, setCurrentVoc] = useState("");
   const [gameStarted, setGameStarted] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
-  const [learned, setLearned] = useState([]);
   const [inputValue, setInputValue] = useState("");
-  const [isCorrect, setIsCorrect] = useState(false);
+  const [targetLabel, setTargetLabel] = useState("");
+  const [result, setResult] = useState("")
+
 
   useEffect(() => {
     const getData = async () => {
@@ -55,10 +61,33 @@ export default function App() {
   const submitAnswer = (e) => {
     e.preventDefault();
     if (!showSolution) {
-      if (currentVoc[1].includes(inputValue)) {
-        setIsCorrect(!isCorrect);
+      setTargetLabel(currentVoc[1]);
+      if (inputValue && inputValue !== ";" && currentVoc[1].includes(inputValue)) {
+        setResult("korrekt");
+        if (score.learnedScore < 5) {
+          setScore(prevState => ({
+            ...prevState,
+            basisScore: prevState.basisScore - 1,
+            learnedScore: prevState.learnedScore + 1,
+          }))
+        }
+      } else {
+        setResult("falsch");
+        if (score.basisScore < 5) {
+                  setScore(prevState => ({
+          ...prevState,
+          basisScore: prevState.basisScore + 1,
+          learnedScore: prevState.learnedScore - 1,
+        }))
+        }
       }
+    } else {
+      setTargetLabel("");
+      setResult("");
+      setInputValue("");
+      choseNextVoc(basis);
     }
+    setShowSolution(!showSolution);
   }
 
   const handleChange = (e) => {
@@ -66,15 +95,13 @@ export default function App() {
   }
 
   return <Fragment>
-        {console.log(currentVoc)}
-        
     <div className="container">
       <div className="box-title">
       <h2>Vokabeln Englisch / Deutsch</h2>
       </div>
-      <Score />
+      <Score stats={score} />
       <Source voc={currentVoc[0]} />
-      <Target gameStatus={gameStarted} feedback={isCorrect} />
+      <Target gameStatus={gameStarted} display={targetLabel} eval={result} />
       {
         gameStarted ? <Answer value={inputValue} handleChange={handleChange} handleClick={submitAnswer} currentV={currentVoc} message={"OK"} /> :
         <Answer value={inputValue} handleChange={handleChange} handleClick={startGame} currentV={currentVoc} message={"Start"} /> 
