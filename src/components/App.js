@@ -60,34 +60,42 @@ export default function App() {
 
   const submitAnswer = (e) => {
     e.preventDefault();
-    if (!showSolution) {
-      setTargetLabel(currentVoc[1]);
-      if (inputValue && inputValue !== ";" && currentVoc[1].includes(inputValue)) {
-        setResult("korrekt");
-        if (score.learnedScore < 5) {
-          setScore(prevState => ({
+    if (learned.length < 5) {
+      if (!showSolution) {
+        setTargetLabel(currentVoc[1]);
+        if (inputValue && inputValue !== ";" && currentVoc[1].includes(inputValue)) {
+          setResult("korrekt");
+          if (score.learnedScore < 5) {
+            setScore(prevState => ({
+              ...prevState,
+              basisScore: prevState.basisScore - 1,
+              learnedScore: prevState.learnedScore + 1,
+            }));
+            setLearned(prevState => [...prevState, currentVoc]);
+            setBasis(prevState => {
+              return prevState.filter(voc => voc !== currentVoc)
+            })
+          }
+        } else {
+          setResult("falsch");
+          /* if (score.basisScore < 5) {
+            setScore(prevState => ({
             ...prevState,
-            basisScore: prevState.basisScore - 1,
-            learnedScore: prevState.learnedScore + 1,
-          }))
+            basisScore: prevState.basisScore + 1,
+            learnedScore: prevState.learnedScore - 1,
+            }))
+          } */
         }
       } else {
-        setResult("falsch");
-        if (score.basisScore < 5) {
-                  setScore(prevState => ({
-          ...prevState,
-          basisScore: prevState.basisScore + 1,
-          learnedScore: prevState.learnedScore - 1,
-        }))
-        }
+        setTargetLabel("");
+        setResult("");
+        setInputValue("");
+        choseNextVoc(basis);
       }
+      setShowSolution(!showSolution);
     } else {
-      setTargetLabel("");
-      setResult("");
-      setInputValue("");
-      choseNextVoc(basis);
+      console.log("Game Over");
     }
-    setShowSolution(!showSolution);
   }
 
   const handleChange = (e) => {
@@ -95,6 +103,8 @@ export default function App() {
   }
 
   return <Fragment>
+    {console.log(basis.length)}
+    {console.log(learned.length)}
     <div className="container">
       <div className="box-title">
       <h2>Vokabeln Englisch / Deutsch</h2>
