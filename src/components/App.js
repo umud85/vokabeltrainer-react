@@ -1,3 +1,14 @@
+/*
+Author: Umut A.
+
+TO DOS:
+
+- refactor choseLearningVocs so it discards duplicates (new Set)
+- avoid dropdownlist to switch to "5" after starting
+- general refactoring and clean-up
+
+*/
+
 import React, { Fragment, useState, useEffect } from "react";
 import Score from "./Score";
 import Source from "./Source";
@@ -7,7 +18,7 @@ import "./App.css";
 import Vokabeln from "../vokabeln.csv"
 
 export default function App() {
-
+  const [amountVocs, setAmountVocs] = useState(7);
   const [data, setData] = useState([]);
   const[score, setScore] = useState({
     base: 0,
@@ -38,6 +49,7 @@ export default function App() {
   useEffect(() => {
     if (gameStarted === true) {
       const score = Array(4).fill(0);
+      
       data.forEach(voc => {
       switch (voc[2]) {
         case 0:
@@ -63,12 +75,10 @@ export default function App() {
     }
   }, [data]);
 
-  const choseRandom = (arr) =>  Math.floor(Math.random() * arr.length);
-
   const choseLearningVocs = (vocList) => {
     const learningVocs = [];
-    while (learningVocs.length < 5) {
-      let randomNumber = choseRandom(vocList)
+    while (learningVocs.length < amountVocs) {
+      let randomNumber = Math.floor(Math.random() * vocList.length);
       if (!learningVocs.includes(vocList[randomNumber].split(",")[0])) {
         let trimmedPair = vocList[randomNumber].trim();
         learningVocs.push(trimmedPair.split(","));
@@ -77,10 +87,10 @@ export default function App() {
     return learningVocs;
   } 
 
-  const choseNextVoc = (vocs) => {
-    let randomNumber = choseRandom(vocs);
+  const choseNextVoc = () => {
+    let randomNumber = Math.floor(Math.random() * amountVocs);
     while (data[randomNumber][2] === 3) {
-      randomNumber = choseRandom(vocs);
+      randomNumber = Math.floor(Math.random() * amountVocs);
     }
     setCurrentVoc(data[randomNumber]);
   }
@@ -99,7 +109,7 @@ export default function App() {
 
   const submitAnswer = (e) => {
     e.preventDefault();
-    if (score.learned === data.length) {
+    if (score.learned === amountVocs) {
       setGameOver(true);
       setResult("");
       setTargetLabel("");
@@ -118,14 +128,11 @@ export default function App() {
       } else {
           setTargetLabel(currentVoc[1]);
           setResult("falsch");
-          if (count > 0) {
-            count--;
-            }
+          count = 0;
       }
       setData(prevState => {
         const newState = [...prevState];
         newState[prevState.indexOf(currentVoc)][2] = count;
-        console.log(newState);
         return newState;
       })
     } else {
@@ -144,17 +151,21 @@ export default function App() {
     setInputValue(e.target.value)
   }
 
+  const handleAmountChange = (e) => {
+    setAmountVocs(parseInt(e.target.value))
+  }
+ 
   return <Fragment>
     <div className="container">
       <div className="box-title">
-      <h2 class="my-header">Vokabeln Englisch / Deutsch</h2>
+      <h2 className="my-header">Vokabeln Englisch / Deutsch</h2>
       </div>
       <Score stats={score} />
       <Source status={gameOver} voc={currentVoc[0]} />
       <Target gameStatus={gameStarted} display={targetLabel} eval={result} />
       {
         gameStarted ? <Answer value={inputValue} handleChange={handleChange} handleClick={submitAnswer} currentV={currentVoc} message={"OK"} /> :
-        <Answer value={inputValue} handleChange={handleChange} handleClick={startGame} status={gameOver} message={"Start"} /> 
+        <Answer amount={amountVocs} value={inputValue} handleAmountChange={handleAmountChange} handleChange={handleChange} handleClick={startGame} status={gameOver} message={"Start"} /> 
       }
     </div>
   </Fragment>

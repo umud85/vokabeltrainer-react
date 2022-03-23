@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from "react";
 
-const Answer = ({ status, message, handleClick, handleChange, value }) => {
+const Answer = ({ amount, status, message, handleAmountChange, handleClick, handleChange, value }) => {
 
   const inputElement = useRef(null)
 
@@ -22,23 +22,23 @@ const Answer = ({ status, message, handleClick, handleChange, value }) => {
         />
         <div className="button-dropdown-wrapper">
           <label htmlFor="numberVocs">Vokabelanzahl:
-            <select name="numberVocs" id="numberVocs">
-              <option value="five">5</option>
-              <option value="six">6</option>
-              <option value="seven" selected>7</option>
-              <option value="eight">8</option>
-              <option value="nine">9</option>
-              <option value="ten">10</option>
-              <option value="eleven">11</option>
-              <option value="twelve">12</option>
-              <option value="thirteen">13</option>
-              <option value="fourteen">14</option>
-              <option value="fifteen">15</option>
-              <option value="sixteen">16</option>
-              <option value="seventeen">17</option>
-              <option value="eighteen">18</option>
-              <option value="nineteen">19</option>
-              <option value="twenty">20</option>
+            <select value={amount} onChange={handleAmountChange} name="numberVocs" id="numberVocs">
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+              <option value="13">13</option>
+              <option value="14">14</option>
+              <option value="15">15</option>
+              <option value="16">16</option>
+              <option value="17">17</option>
+              <option value="18">18</option>
+              <option value="19">19</option>
+              <option value="20">20</option>
             </select>
           </label>
           <input type="submit" id="my-button" value="Start again" />
@@ -59,32 +59,58 @@ const Answer = ({ status, message, handleClick, handleChange, value }) => {
         onChange={handleChange}
         ref={inputElement}
         />
-        <div className="button-dropdown-wrapper">
+        
+        {message === "Start" ?
+          <div className="button-dropdown-wrapper">
           <label htmlFor="numberVocs">Vokabelanzahl:
-            <select name="numberVocs" id="numberVocs">
-              <option value="five">5</option>
-              <option value="six">6</option>
-              <option value="seven" selected>7</option>
-              <option value="eight">8</option>
-              <option value="nine">9</option>
-              <option value="ten">10</option>
-              <option value="eleven">11</option>
-              <option value="twelve">12</option>
-              <option value="thirteen">13</option>
-              <option value="fourteen">14</option>
-              <option value="fifteen">15</option>
-              <option value="sixteen">16</option>
-              <option value="seventeen">17</option>
-              <option value="eighteen">18</option>
-              <option value="nineteen">19</option>
-              <option value="twenty">20</option>
+          <select value={amount} onChange={handleAmountChange} name="numberVocs" id="numberVocs">
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+              <option value="13">13</option>
+              <option value="14">14</option>
+              <option value="15">15</option>
+              <option value="16">16</option>
+              <option value="17">17</option>
+              <option value="18">18</option>
+              <option value="19">19</option>
+              <option value="20">20</option>
             </select>
           </label>
-          {message === "Start" ?
-            <div><input type="submit" id="my-button" value={message} /></div> :
             <div><input type="submit" id="my-button" value={message} /></div>
+            </div>
+          :
+          
+          <div className="button-dropdown-wrapper">
+          <label htmlFor="numberVocs">Vokabelanzahl:
+          <select disabled name="numberVocs" id="numberVocs">
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+              <option value="13">13</option>
+              <option value="14">14</option>
+              <option value="15">15</option>
+              <option value="16">16</option>
+              <option value="17">17</option>
+              <option value="18">18</option>
+              <option value="19">19</option>
+              <option value="20">20</option>
+            </select>
+          </label>
+            <div><input type="submit" id="my-button" value={message} /></div>
+            </div>
           }
-        </div>
+        
         
     </div>
   </form>
