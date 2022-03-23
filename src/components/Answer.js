@@ -1,6 +1,6 @@
 import React, {useEffect, useRef} from "react";
 
-const Answer = ({ currentV, message, handleClick, handleChange, value }) => {
+const Answer = ({ status, message, handleClick, handleChange, value }) => {
 
   const inputElement = useRef(null)
 
@@ -10,7 +10,23 @@ const Answer = ({ currentV, message, handleClick, handleChange, value }) => {
     }
   })
 
-  return <form onSubmit={handleClick}>
+  const GameOverStatus = () => {
+    return <form onSubmit={() => this.disabled = true}>
+    <div className="answer-box">
+      <input
+        id="answer"
+        className="answer-field"
+        type="text"
+        name="answer"
+        value=""
+      />
+      <div><input type="submit" id="my-button" value="Start again" /></div>
+    </div>
+  </form>
+  }
+
+  const LearningStatus = () => {
+    return <form onSubmit={handleClick}>
     <div className="answer-box">
       <input
         id="answer"
@@ -27,6 +43,12 @@ const Answer = ({ currentV, message, handleClick, handleChange, value }) => {
       }
     </div>
   </form>
+  }
+  
+  if (status) {
+    return <GameOverStatus />
+  }
+  return <LearningStatus />
 }
 
 export default Answer

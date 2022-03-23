@@ -8,18 +8,20 @@ import Vokabeln from "../vokabeln.csv"
 
 export default function App() {
 
-  const [basis, setBasis] = useState([]);
-  const [learned, setLearned] = useState([]);
-  const [score, setScore] = useState({
-    basisScore: 5,
-    learnedScore: 0,
-  });
+  const [data, setData] = useState([]);
+  const[score, setScore] = useState({
+    base: 0,
+    step1: 0,
+    step2: 0,
+    learned: 0,
+  })
   const [currentVoc, setCurrentVoc] = useState("");
   const [gameStarted, setGameStarted] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [targetLabel, setTargetLabel] = useState("");
-  const [result, setResult] = useState("")
+  const [result, setResult] = useState("");
 
 
   useEffect(() => {
@@ -27,11 +29,39 @@ export default function App() {
       const response = await fetch(Vokabeln);
       const rawData = await response.text();
       const formattedData = rawData.split("\n").splice(1);
-      const learningVocs = choseLearningVocs(formattedData);
-      setBasis(learningVocs)
+      const learningVocs = choseLearningVocs(formattedData).map(item => [...item, 0]);
+      setData(learningVocs)
     }
     getData();
   }, []);
+
+  useEffect(() => {
+    if (gameStarted === true) {
+      const score = Array(4).fill(0);
+      data.forEach(voc => {
+      switch (voc[2]) {
+        case 0:
+          score[0] += 1;
+          break;
+        case 1:
+          score[1] += 1;
+          break;
+        case 2:
+          score[2] += 1;
+          break;
+        case 3:
+          score[3] += 1;
+          break;
+      }
+    })
+    setScore({
+      base: score[0],
+      step1: score[1],
+      step2: score[2],
+      learned: score[3],
+      }) 
+    }
+  }, [data]);
 
   const choseRandom = (arr) =>  Math.floor(Math.random() * arr.length);
 
@@ -49,53 +79,65 @@ export default function App() {
 
   const choseNextVoc = (vocs) => {
     let randomNumber = choseRandom(vocs);
-    setCurrentVoc(basis[randomNumber]);
+    while (data[randomNumber][2] === 3) {
+      randomNumber = choseRandom(vocs);
+    }
+    setCurrentVoc(data[randomNumber]);
   }
 
   const startGame = (e) => {
     e.preventDefault();
-    choseNextVoc(basis);
+    choseNextVoc(data);
     setGameStarted(true);
+    setScore({
+      base: data.length,
+      step1: 0,
+      step2: 0,
+      learned: 0,
+    })
   }
 
   const submitAnswer = (e) => {
     e.preventDefault();
-    if (learned.length < 5) {
-      if (!showSolution) {
-        setTargetLabel(currentVoc[1]);
-        if (inputValue && inputValue !== ";" && currentVoc[1].includes(inputValue)) {
-          setResult("korrekt");
-          if (score.learnedScore < 5) {
-            setScore(prevState => ({
-              ...prevState,
-              basisScore: prevState.basisScore - 1,
-              learnedScore: prevState.learnedScore + 1,
-            }));
-            setLearned(prevState => [...prevState, currentVoc]);
-            setBasis(prevState => {
-              return prevState.filter(voc => voc !== currentVoc)
-            })
-          }
-        } else {
-          setResult("falsch");
-          /* if (score.basisScore < 5) {
-            setScore(prevState => ({
-            ...prevState,
-            basisScore: prevState.basisScore + 1,
-            learnedScore: prevState.learnedScore - 1,
-            }))
-          } */
-        }
-      } else {
-        setTargetLabel("");
-        setResult("");
-        setInputValue("");
-        choseNextVoc(basis);
-      }
-      setShowSolution(!showSolution);
-    } else {
-      console.log("Game Over");
+    if (score.learned === data.length) {
+      setGameOver(true);
+      setResult("");
+      setTargetLabel("");
+      setTargetLabel("Completed");
+      return null;
     }
+    if (!showSolution) {
+      let count = currentVoc[2]
+      if (inputValue !== "" && inputValue !== ";" && currentVoc[1].includes(inputValue)) {
+        setTargetLabel(currentVoc[1]);
+        setResult("korrekt");
+        if (count < 3) {
+          count++;
+        }
+
+      } else {
+          setTargetLabel(currentVoc[1]);
+          setResult("falsch");
+          if (count > 0) {
+            count--;
+            }
+      }
+      setData(prevState => {
+        const newState = [...prevState];
+        newState[prevState.indexOf(currentVoc)][2] = count;
+        console.log(newState);
+        return newState;
+      })
+    } else {
+        setResult("");
+        setTargetLabel("");
+        if (!gameOver) {
+          choseNextVoc(data);
+        } 
+      }
+    setInputValue("");
+    e.target.value = "";
+    setShowSolution(!showSolution);
   }
 
   const handleChange = (e) => {
@@ -103,18 +145,16 @@ export default function App() {
   }
 
   return <Fragment>
-    {console.log(basis.length)}
-    {console.log(learned.length)}
     <div className="container">
       <div className="box-title">
       <h2>Vokabeln Englisch / Deutsch</h2>
       </div>
       <Score stats={score} />
-      <Source voc={currentVoc[0]} />
+      <Source status={gameOver} voc={currentVoc[0]} />
       <Target gameStatus={gameStarted} display={targetLabel} eval={result} />
       {
         gameStarted ? <Answer value={inputValue} handleChange={handleChange} handleClick={submitAnswer} currentV={currentVoc} message={"OK"} /> :
-        <Answer value={inputValue} handleChange={handleChange} handleClick={startGame} currentV={currentVoc} message={"Start"} /> 
+        <Answer value={inputValue} handleChange={handleChange} handleClick={startGame} status={gameOver} message={"Start"} /> 
       }
     </div>
   </Fragment>
