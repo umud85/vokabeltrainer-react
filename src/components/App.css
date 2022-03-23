@@ -9,15 +9,6 @@ html {
   font-family: "Libre Franklin", sans-serif;
 }
 
-h1 {
-  text-align: center;
-}
-
-h2 {
-  font-size: 1.6rem;
-  font-weight: 700;
-}
-
 .container {
   width: 800px;
   height: 600px;
@@ -30,7 +21,9 @@ h2 {
 }
 
 .box-title {
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background-color: rgb(47, 119, 253);
   color: #fff;
   height: 100px;
@@ -39,6 +32,11 @@ h2 {
   font-weight: bold;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
+}
+
+.my-header {
+  font-size: 1.6rem;
+  font-weight: 700;
 }
 
 .score-box {
@@ -104,6 +102,12 @@ h2 {
   height: 2rem;
   margin: 1rem auto;
   background-color: rgb(47, 119, 253);
+  border-radius: 7px;
   color: white;
   cursor: pointer;
+}
+
+#my-button:hover {
+  transform: scale(0.98);
+  background-color: rgb(72, 135, 253);
 }

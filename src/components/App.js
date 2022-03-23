@@ -147,7 +147,7 @@ export default function App() {
   return <Fragment>
     <div className="container">
       <div className="box-title">
-      <h2>Vokabeln Englisch / Deutsch</h2>
+      <h2 class="my-header">Vokabeln Englisch / Deutsch</h2>
       </div>
       <Score stats={score} />
       <Source status={gameOver} voc={currentVoc[0]} />
