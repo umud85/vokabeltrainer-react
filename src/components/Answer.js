@@ -10,6 +10,17 @@ const Answer = ({ amount, status, message, handleAmountChange, handleClick, hand
     }
   })
 
+  const createLabel = () => {
+    const numberVocs = new Array(16).fill(0);
+    return (
+      <label htmlFor="numberVocs">Vokabelanzahl:
+        <select value={amount} onChange={handleAmountChange} name="numberVocs" id="numberVocs">
+          {numberVocs.map((item, index) => <option key={index} value={index + 5}>{index + 5}</option>)}
+        </select>
+      </label>
+    );
+  }
+
   const GameOverStatus = () => {
     return <form onSubmit={() => this.disabled = true}>
     <div className="answer-box">
@@ -21,26 +32,7 @@ const Answer = ({ amount, status, message, handleAmountChange, handleClick, hand
         value=""
         />
         <div className="button-dropdown-wrapper">
-          <label htmlFor="numberVocs">Vokabelanzahl:
-            <select value={amount} onChange={handleAmountChange} name="numberVocs" id="numberVocs">
-              <option value="5">5</option>
-              <option value="6">6</option>
-              <option value="7">7</option>
-              <option value="8">8</option>
-              <option value="9">9</option>
-              <option value="10">10</option>
-              <option value="11">11</option>
-              <option value="12">12</option>
-              <option value="13">13</option>
-              <option value="14">14</option>
-              <option value="15">15</option>
-              <option value="16">16</option>
-              <option value="17">17</option>
-              <option value="18">18</option>
-              <option value="19">19</option>
-              <option value="20">20</option>
-            </select>
-          </label>
+         {createLabel()}
           <input type="submit" id="my-button" value="Start again" />
         </div>
     </div>
@@ -62,51 +54,13 @@ const Answer = ({ amount, status, message, handleAmountChange, handleClick, hand
         
         {message === "Start" ?
           <div className="button-dropdown-wrapper">
-          <label htmlFor="numberVocs">Vokabelanzahl:
-          <select value={amount} onChange={handleAmountChange} name="numberVocs" id="numberVocs">
-              <option value="5">5</option>
-              <option value="6">6</option>
-              <option value="7">7</option>
-              <option value="8">8</option>
-              <option value="9">9</option>
-              <option value="10">10</option>
-              <option value="11">11</option>
-              <option value="12">12</option>
-              <option value="13">13</option>
-              <option value="14">14</option>
-              <option value="15">15</option>
-              <option value="16">16</option>
-              <option value="17">17</option>
-              <option value="18">18</option>
-              <option value="19">19</option>
-              <option value="20">20</option>
-            </select>
-          </label>
+            {createLabel()}
             <div><input type="submit" id="my-button" value={message} /></div>
             </div>
           :
           
           <div className="button-dropdown-wrapper">
-          <label htmlFor="numberVocs">Vokabelanzahl:
-          <select disabled name="numberVocs" id="numberVocs">
-              <option value="5">5</option>
-              <option value="6">6</option>
-              <option value="7">7</option>
-              <option value="8">8</option>
-              <option value="9">9</option>
-              <option value="10">10</option>
-              <option value="11">11</option>
-              <option value="12">12</option>
-              <option value="13">13</option>
-              <option value="14">14</option>
-              <option value="15">15</option>
-              <option value="16">16</option>
-              <option value="17">17</option>
-              <option value="18">18</option>
-              <option value="19">19</option>
-              <option value="20">20</option>
-            </select>
-          </label>
+          {createLabel()}
             <div><input type="submit" id="my-button" value={message} /></div>
             </div>
           }
